@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Coffee Brand Engine — 精品咖啡電商平台</title>
+<meta name="description" content="專為精品咖啡品牌打造的電商平台。購物車、會員、儲值、訂單管理、品牌日誌，一套架構，你的專屬品牌。"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Sans+TC:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --ink:    #1C1208;
+  --ink2:   #2E1E10;
+  --cream:  #F5F0E8;
+  --muted:  #9A8870;
+  --gold:   #C8922A;
+  --gold2:  #E8B84B;
+  --border: rgba(200,146,42,0.2);
+  --serif:  'Cormorant Garamond',serif;
+  --sans:   'Noto Sans TC',sans-serif;
+  --mono:   'DM Mono',monospace;
+}
+
+html{scroll-behavior:smooth;}
+
+body{
+  font-family:var(--sans);
+  background:var(--ink);
+  color:var(--cream);
+  overflow-x:hidden;
+  line-height:1.7;
+}
+
+/* ── Nav ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 60px;
+  background:rgba(28,18,8,0.85);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  font-family:var(--serif);
+  font-size:1.2rem;
+  letter-spacing:0.08em;
+  color:var(--cream);
+}
+.nav-logo em{color:var(--gold);font-style:normal;}
+.nav-links{display:flex;gap:36px;list-style:none;}
+.nav-links a{
+  font-family:var(--mono);
+  font-size:0.68rem;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--muted);
+  text-decoration:none;
+  transition:color 0.2s;
+}
+.nav-links a:hover{color:var(--gold);}
+.nav-cta{
+  font-family:var(--mono);
+  font-size:0.7rem;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--ink);
+  background:var(--gold);
+  border:none;
+  padding:10px 24px;
+  cursor:pointer;
+  transition:all 0.2s;
+  text-decoration:none;
+}
+.nav-cta:hover{background:var(--gold2);}
+
+/* ── Hero ── */
+.hero{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:120px 40px 80px;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:'';
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(200,146,42,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 20% 80%, rgba(200,146,42,0.04) 0%, transparent 60%);
+  pointer-events:none;
+}
+/* 大型裝飾字 */
+.hero-deco{
+  position:absolute;
+  font-family:var(--serif);
+  font-size:clamp(200px,30vw,420px);
+  font-weight:600;
+  color:rgba(200,146,42,0.04);
+  line-height:1;
+  letter-spacing:-0.04em;
+  right:-2%;
+  top:50%;
+  transform:translateY(-50%);
+  pointer-events:none;
+  user-select:none;
+  white-space:nowrap;
+}
+.hero-eyebrow{
+  font-family:var(--mono);
+  font-size:0.68rem;
+  letter-spacing:0.35em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:32px;
+}
+.hero-title{
+  font-family:var(--serif);
+  font-size:clamp(3.2rem,7vw,6.5rem);
+  font-weight:600;
+  line-height:1.05;
+  letter-spacing:0.02em;
+  margin-bottom:28px;
+  max-width:900px;
+}
+.hero-title em{
+  font-style:italic;
+  color:var(--gold);
+}
+.hero-sub{
+  font-size:1rem;
+  color:var(--muted);
+  line-height:1.9;
+  max-width:520px;
+  margin:0 auto 48px;
+  font-weight:300;
+}
+.hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.btn-primary{
+  font-family:var(--mono);
+  font-size:0.75rem;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--ink);
+  background:var(--gold);
+  border:none;
+  padding:16px 40px;
+  cursor:pointer;
+  transition:all 0.2s;
+  text-decoration:none;
+}
+.btn-primary:hover{background:var(--gold2);transform:translateY(-1px);}
+.btn-ghost{
+  font-family:var(--mono);
+  font-size:0.75rem;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--cream);
+  background:none;
+  border:1px solid rgba(245,240,232,0.3);
+  padding:16px 40px;
+  cursor:pointer;
+  transition:all 0.2s;
+  text-decoration:none;
+}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+
+/* ── Shared section styles ── */
+section{padding:100px 60px;}
+.section-inner{max-width:1100px;margin:0 auto;}
+.eyebrow{
+  font-family:var(--mono);
+  font-size:0.65rem;
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:20px;
+}
+.section-title{
+  font-family:var(--serif);
+  font-size:clamp(2.2rem,4vw,3.5rem);
+  font-weight:600;
+  line-height:1.15;
+  letter-spacing:0.02em;
+  margin-bottom:20px;
+}
+.section-desc{
+  color:var(--muted);
+  font-size:0.92rem;
+  line-height:1.9;
+  font-weight:300;
+  max-width:560px;
+}
+.divider{
+  width:40px;height:1px;
+  background:var(--gold);
+  margin:24px 0;
+}
+
+/* ── Features ── */
+.features{background:var(--ink2);}
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:2px;
+  margin-top:64px;
+}
+.feature-card{
+  background:var(--ink);
+  padding:40px 36px;
+  border:1px solid var(--border);
+  transition:border-color 0.25s;
+}
+.feature-card:hover{border-color:rgba(200,146,42,0.5);}
+.feature-icon{
+  font-size:1.8rem;
+  margin-bottom:20px;
+  display:block;
+}
+.feature-name{
+  font-family:var(--serif);
+  font-size:1.3rem;
+  font-weight:600;
+  color:var(--cream);
+  margin-bottom:10px;
+  letter-spacing:0.03em;
+}
+.feature-desc{
+  font-size:0.85rem;
+  color:var(--muted);
+  line-height:1.8;
+  font-weight:300;
+}
+
+/* ── Cases ── */
+.cases{background:var(--ink);}
+.cases-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:32px;
+  margin-top:64px;
+}
+.case-card{
+  border:1px solid var(--border);
+  overflow:hidden;
+}
+.case-preview{
+  height:280px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--serif);
+  font-size:4rem;
+  letter-spacing:0.1em;
+  position:relative;
+  overflow:hidden;
+}
+.case-preview.gander{
+  background:linear-gradient(135deg,#2E1810,#1C0F08);
+  color:rgba(200,146,42,0.4);
+}
+.case-preview.yoshino{
+  background:linear-gradient(135deg,#2B1B17,#1A0F0A);
+  color:rgba(226,135,67,0.3);
+}
+.case-preview-label{
+  position:absolute;
+  bottom:20px;left:24px;
+  font-family:var(--mono);
+  font-size:0.65rem;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+}
+.case-preview.gander .case-preview-label{color:rgba(200,146,42,0.6);}
+.case-preview.yoshino .case-preview-label{color:rgba(226,135,67,0.6);}
+.case-info{padding:28px 32px;}
+.case-brand{
+  font-family:var(--serif);
+  font-size:1.4rem;
+  font-weight:600;
+  margin-bottom:8px;
+}
+.case-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+.tag{
+  font-family:var(--mono);
+  font-size:0.62rem;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--gold);
+  border:1px solid var(--border);
+  padding:4px 12px;
+}
+
+/* ── Process ── */
+.process{background:var(--ink2);}
+.process-steps{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:48px;
+  margin-top:64px;
+  position:relative;
+}
+.process-steps::before{
+  content:'';
+  position:absolute;
+  top:24px;left:0;right:0;
+  height:1px;
+  background:var(--border);
+}
+.step{}
+.step-num{
+  font-family:var(--mono);
+  font-size:0.65rem;
+  letter-spacing:0.2em;
+  color:var(--gold);
+  margin-bottom:20px;
+  display:flex;align-items:center;gap:12px;
+}
+.step-num::before{
+  content:'';
+  width:10px;height:10px;
+  background:var(--gold);
+  display:block;
+  flex-shrink:0;
+}
+.step-title{
+  font-family:var(--serif);
+  font-size:1.25rem;
+  font-weight:600;
+  margin-bottom:12px;
+  color:var(--cream);
+}
+.step-desc{
+  font-size:0.83rem;
+  color:var(--muted);
+  line-height:1.8;
+  font-weight:300;
+}
+
+/* ── Checklist（需要準備） ── */
+.checklist-section{background:var(--ink);}
+.checklist-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:48px;
+  margin-top:64px;
+}
+.checklist-group{}
+.checklist-group-title{
+  font-family:var(--mono);
+  font-size:0.68rem;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:24px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--border);
+}
+.checklist-item{
+  display:flex;align-items:flex-start;gap:14px;
+  margin-bottom:18px;
+}
+.check-icon{
+  width:20px;height:20px;
+  border:1px solid var(--gold);
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  margin-top:2px;
+}
+.check-icon::after{
+  content:'';
+  width:8px;height:8px;
+  background:var(--gold);
+}
+.check-text{
+  font-size:0.88rem;
+  color:var(--cream);
+  line-height:1.7;
+}
+.check-note{
+  font-size:0.75rem;
+  color:var(--muted);
+  display:block;margin-top:2px;
+}
+
+/* ── Pricing ── */
+.pricing{background:var(--ink2);}
+.pricing-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2px;
+  margin-top:64px;
+}
+.pricing-card{
+  background:var(--ink);
+  padding:44px 36px;
+  border:1px solid var(--border);
+  position:relative;
+  transition:border-color 0.2s;
+}
+.pricing-card:hover{border-color:rgba(200,146,42,0.5);}
+.pricing-card.featured{
+  border-color:var(--gold);
+  background:rgba(200,146,42,0.05);
+}
+.featured-badge{
+  position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:0.6rem;letter-spacing:0.15em;
+  text-transform:uppercase;
+  background:var(--gold);color:var(--ink);
+  padding:4px 16px;
+  white-space:nowrap;
+}
+.plan-name{
+  font-family:var(--mono);
+  font-size:0.7rem;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:20px;
+}
+.plan-price{
+  font-family:var(--serif);
+  font-size:2.8rem;
+  font-weight:600;
+  color:var(--cream);
+  line-height:1;
+  margin-bottom:6px;
+}
+.plan-unit{
+  font-family:var(--mono);
+  font-size:0.68rem;
+  color:var(--muted);
+  letter-spacing:0.1em;
+  margin-bottom:28px;
+}
+.plan-features{
+  list-style:none;
+  border-top:1px solid var(--border);
+  padding-top:24px;
+}
+.plan-features li{
+  font-size:0.83rem;
+  color:var(--muted);
+  padding:8px 0;
+  border-bottom:1px solid rgba(200,146,42,0.08);
+  display:flex;gap:10px;align-items:flex-start;
+}
+.plan-features li::before{
+  content:'—';
+  color:var(--gold);
+  flex-shrink:0;
+}
+
+/* 月費 */
+.monthly-note{
+  margin-top:48px;
+  padding:32px 40px;
+  border:1px solid var(--border);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:32px;
+}
+.monthly-item{}
+.monthly-label{
+  font-family:var(--mono);font-size:0.65rem;letter-spacing:0.15em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:8px;
+}
+.monthly-price{
+  font-family:var(--serif);font-size:1.8rem;font-weight:600;color:var(--cream);
+  margin-bottom:4px;
+}
+.monthly-desc{font-size:0.82rem;color:var(--muted);line-height:1.7;}
+
+/* ── Contact Form ── */
+.contact{background:var(--ink);}
+.contact-inner{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:80px;
+  max-width:1100px;
+  margin:0 auto;
+}
+.contact-form{margin-top:0;}
+.form-group{margin-bottom:20px;}
+.form-label{
+  display:block;
+  font-family:var(--mono);
+  font-size:0.65rem;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:8px;
+}
+.form-input,
+.form-select,
+.form-textarea{
+  width:100%;
+  background:rgba(245,240,232,0.05);
+  border:1px solid var(--border);
+  color:var(--cream);
+  padding:12px 16px;
+  font-family:var(--sans);
+  font-size:0.88rem;
+  outline:none;
+  transition:border-color 0.2s;
+  border-radius:0;
+  appearance:none;
+}
+.form-input::placeholder,
+.form-textarea::placeholder{color:var(--muted);}
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus{border-color:var(--gold);}
+.form-select option{background:var(--ink);}
+.form-textarea{resize:vertical;min-height:120px;}
+.form-submit{
+  font-family:var(--mono);
+  font-size:0.75rem;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--ink);
+  background:var(--gold);
+  border:none;
+  padding:16px 40px;
+  cursor:pointer;
+  transition:all 0.2s;
+  width:100%;
+  margin-top:8px;
+}
+.form-submit:hover{background:var(--gold2);}
+.form-success{
+  display:none;
+  text-align:center;
+  padding:60px 20px;
+}
+.form-success-icon{font-size:2.5rem;margin-bottom:16px;}
+.form-success-title{
+  font-family:var(--serif);font-size:1.6rem;
+  color:var(--cream);margin-bottom:8px;
+}
+.form-success-desc{font-size:0.88rem;color:var(--muted);}
+
+/* ── Footer ── */
+footer{
+  background:var(--ink2);
+  border-top:1px solid var(--border);
+  padding:48px 60px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:20px;
+}
+.footer-brand{
+  font-family:var(--serif);
+  font-size:1.1rem;
+  color:var(--cream);
+}
+.footer-brand em{color:var(--gold);font-style:normal;}
+.footer-copy{
+  font-family:var(--mono);
+  font-size:0.62rem;
+  letter-spacing:0.1em;
+  color:var(--muted);
+}
+
+/* ── Responsive ── */
+@media(max-width:900px){
+  nav{padding:16px 24px;}
+  .nav-links{display:none;}
+  section{padding:72px 24px;}
+  .cases-grid{grid-template-columns:1fr;}
+  .pricing-grid{grid-template-columns:1fr;}
+  .checklist-grid{grid-template-columns:1fr;}
+  .contact-inner{grid-template-columns:1fr;gap:48px;}
+  .monthly-note{grid-template-columns:1fr;}
+  .process-steps::before{display:none;}
+  footer{padding:40px 24px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <div class="nav-logo">Coffee Brand <em>Engine</em></div>
+  <ul class="nav-links">
+    <li><a href="#features">功能</a></li>
+    <li><a href="#process">流程</a></li>
+    <li><a href="#pricing">費用</a></li>
+    <li><a href="#contact">申請</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">立即申請</a>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-deco" aria-hidden="true">Coffee</div>
+  <div class="hero-eyebrow">Coffee Brand Engine — 精品咖啡電商平台</div>
+  <h1 class="hero-title">
+    你的品牌，<em>你的電商</em><br>兩週內上線
+  </h1>
+  <p class="hero-sub">
+    從購物車、會員到訂單管理，一套完整的電商架構，<br>
+    套上你的品牌風格，讓顧客直接在你的網站下單。
+  </p>
+  <div class="hero-actions">
+    <a href="#contact" class="btn-primary">申請開通</a>
+    <a href="#features" class="btn-ghost">了解功能</a>
+  </div>
+</section>
+
+<!-- ── Features ── -->
+<section class="features" id="features">
+  <div class="section-inner">
+    <div class="eyebrow">Features</div>
+    <h2 class="section-title">你需要的<br>全部都在裡面</h2>
+    <div class="divider"></div>
+    <p class="section-desc">不需要額外購買其他服務。開通後即可使用以下所有功能。</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="feature-icon">☕</span>
+        <div class="feature-name">商品管理</div>
+        <p class="feature-desc">熟豆、預購烘焙、生豆直購、器材選物。後台直接新增商品、上傳圖片、管理庫存，售完自動顯示停售。</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🛒</span>
+        <div class="feature-name">購物車 & 結帳</div>
+        <p class="feature-desc">支援郵局、超商、黑貓宅配、門市自取。接入 ECpay 綠界，信用卡、ATM、超商付款一次搞定。</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">👤</span>
+        <div class="feature-name">會員系統</div>
+        <p class="feature-desc">儲值碼註冊、消費折扣等級（95折/9折/85折）、帳戶餘額儲值、訂單查詢，顧客全程可自助。</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">📦</span>
+        <div class="feature-name">訂單管理</div>
+        <p class="feature-desc">後台一覽所有訂單，一鍵列印 1/4 A4 出貨單，標記出貨後自動寄送通知信給顧客。</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">📝</span>
+        <div class="feature-name">品牌日誌</div>
+        <p class="feature-desc">連結 Notion，在 Notion 裡寫文章，自動同步到網站。支援圖文混排，圖片永久儲存不過期。</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">✉️</span>
+        <div class="feature-name">Email 通知</div>
+        <p class="feature-desc">下單確認信、出貨通知信、忘記密碼重設，全部自動寄送，不需要額外申請 Email 服務。</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🔒</span>
+        <div class="feature-name">安全可靠</div>
+        <p class="feature-desc">會員密碼加密儲存、ECpay 付款驗證、登入失敗自動鎖定，達到電商級安全標準。</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🎨</span>
+        <div class="feature-name">專屬品牌風格</div>
+        <p class="feature-desc">色彩、字型、文案全部客製化，確保你的網站和其他品牌看起來完全不同。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Cases ── -->
+<section class="cases" id="cases">
+  <div class="section-inner">
+    <div class="eyebrow">Live Cases</div>
+    <h2 class="section-title">已上線品牌</h2>
+    <div class="divider"></div>
+    <div class="cases-grid">
+      <div class="case-card">
+        <div class="case-preview gander">
+          Gander<br>Cafe
+          <div class="case-preview-label">gandercafe.pages.dev</div>
+        </div>
+        <div class="case-info">
+          <div class="case-brand">Gander Cafe</div>
+          <p style="font-size:0.85rem;color:var(--muted);line-height:1.8;font-weight:300;">
+            花蓮精品咖啡烘焙品牌。暖棕色系、歐美文青風格，現有熟豆、預購烘焙、生豆販售三大商品線。
+          </p>
+          <div class="case-tags">
+            <span class="tag">熟豆選購</span>
+            <span class="tag">預購烘焙</span>
+            <span class="tag">儲值會員</span>
+            <span class="tag">品牌日誌</span>
+          </div>
+        </div>
+      </div>
+      <div class="case-card">
+        <div class="case-preview yoshino">
+          吉野<br>珈琲
+          <div class="case-preview-label">yoshino-cafe.pages.dev</div>
+        </div>
+        <div class="case-info">
+          <div class="case-brand">吉野咖啡</div>
+          <p style="font-size:0.85rem;color:var(--muted);line-height:1.8;font-weight:300;">
+            台中精品咖啡品牌。日式昭和復古風格，深木色調搭配琥珀橘，呈現截然不同的視覺語言。
+          </p>
+          <div class="case-tags">
+            <span class="tag">昭和復古</span>
+            <span class="tag">日式風格</span>
+            <span class="tag">完整功能</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Process ── -->
+<section class="process" id="process">
+  <div class="section-inner">
+    <div class="eyebrow">Process</div>
+    <h2 class="section-title">從申請到上線<br>最快兩週</h2>
+    <div class="divider"></div>
+    <div class="process-steps">
+      <div class="step">
+        <div class="step-num">Step 01</div>
+        <div class="step-title">填寫申請表單</div>
+        <p class="step-desc">告訴我你的品牌名稱、風格方向、和目前的商品種類。初步討論完全免費。</p>
+      </div>
+      <div class="step">
+        <div class="step-num">Step 02</div>
+        <div class="step-title">風格確認</div>
+        <p class="step-desc">根據你的品牌提案色彩和視覺風格，確認後開始設定。</p>
+      </div>
+      <div class="step">
+        <div class="step-num">Step 03</div>
+        <div class="step-title">開通設定</div>
+        <p class="step-desc">建立你的專屬後台、資料庫、ECpay 串接，協助你上架第一批商品。</p>
+      </div>
+      <div class="step">
+        <div class="step-num">Step 04</div>
+        <div class="step-title">上線 🎉</div>
+        <p class="step-desc">網站正式上線，我提供後台操作教學，確保你能獨立管理商品和訂單。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Checklist ── -->
+<section class="checklist-section" id="checklist">
+  <div class="section-inner">
+    <div class="eyebrow">Requirements</div>
+    <h2 class="section-title">你需要準備的</h2>
+    <div class="divider"></div>
+    <p class="section-desc">申請前請確認以下項目，有疑問都可以在申請表單裡說明。</p>
+    <div class="checklist-grid" style="margin-top:48px;">
+      <div class="checklist-group">
+        <div class="checklist-group-title">必要項目</div>
+        <div class="checklist-item">
+          <div class="check-icon"></div>
+          <div class="check-text">
+            ECpay 綠界商家帳號
+            <span class="check-note">免費申請，需提供統編或個人身份證。ECpay 對每筆交易收取手續費。</span>
+          </div>
+        </div>
+        <div class="checklist-item">
+          <div class="check-icon"></div>
+          <div class="check-text">
+            品牌名稱與 Logo（或文字版）
+            <span class="check-note">有 Logo 檔案最佳，沒有的話可以用文字品牌名稱替代。</span>
+          </div>
+        </div>
+        <div class="checklist-item">
+          <div class="check-icon"></div>
+          <div class="check-text">
+            商品資料與圖片
+            <span class="check-note">至少 3-5 款商品的名稱、介紹、售價、商品圖片。</span>
+          </div>
+        </div>
+        <div class="checklist-item">
+          <div class="check-icon"></div>
+          <div class="check-text">
+            GitHub 帳號
+            <span class="check-note">用來存放網站程式碼，免費申請，5分鐘可完成。</span>
+          </div>
+        </div>
+      </div>
+      <div class="checklist-group">
+        <div class="checklist-group-title">選用項目</div>
+        <div class="checklist-item">
+          <div class="check-icon"></div>
+          <div class="check-text">
+            Notion 帳號（品牌日誌用）
+            <span class="check-note">想要用 Notion 寫品牌故事、豆子開箱等文章，再申請即可。</span>
+          </div>
+        </div>
+        <div class="checklist-item">
+          <div class="check-icon"></div>
+          <div class="check-text">
+            自訂網域（如 xxx.com.tw）
+            <span class="check-note">沒有的話會使用 xxx.pages.dev 免費網址，之後可以隨時綁定自訂網域。</span>
+          </div>
+        </div>
+        <div class="checklist-item">
+          <div class="check-icon"></div>
+          <div class="check-text">
+            品牌色彩偏好
+            <span class="check-note">有想要的色調或參考圖最好，沒有的話可以根據你的品牌一起討論。</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Pricing ── -->
+<section class="pricing" id="pricing">
+  <div class="section-inner">
+    <div class="eyebrow">Pricing</div>
+    <h2 class="section-title">透明定價</h2>
+    <div class="divider"></div>
+    <p class="section-desc">一次性開站費，無隱藏費用。主機費用幾乎為零（Cloudflare 免費方案）。</p>
+
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="plan-name">基本版</div>
+        <div class="plan-price">NT$8,000</div>
+        <div class="plan-unit">開站費（一次性）</div>
+        <ul class="plan-features">
+          <li>標準品牌色彩套用</li>
+          <li>完整電商功能</li>
+          <li>ECpay 金流串接</li>
+          <li>後台操作教學</li>
+          <li>上線後 7 天問題支援</li>
+        </ul>
+      </div>
+      <div class="pricing-card featured">
+        <div class="featured-badge">最多人選擇</div>
+        <div class="plan-name">品牌版</div>
+        <div class="plan-price">NT$15,000</div>
+        <div class="plan-unit">開站費（一次性）</div>
+        <ul class="plan-features">
+          <li>完整客製色彩 + 字型</li>
+          <li>完整電商功能</li>
+          <li>ECpay 金流串接</li>
+          <li>Notion 品牌日誌設定</li>
+          <li>商品代為上架（10件）</li>
+          <li>上線後 30 天問題支援</li>
+        </ul>
+      </div>
+      <div class="pricing-card">
+        <div class="plan-name">旗艦版</div>
+        <div class="plan-price">NT$25,000</div>
+        <div class="plan-unit">開站費（一次性）起</div>
+        <ul class="plan-features">
+          <li>完全客製視覺設計</li>
+          <li>完整電商功能</li>
+          <li>ECpay 金流串接</li>
+          <li>Notion 品牌日誌設定</li>
+          <li>商品代為上架（不限）</li>
+          <li>自訂功能需求（另估）</li>
+          <li>優先技術支援</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="monthly-note">
+      <div class="monthly-item">
+        <div class="monthly-label">基本維護月費</div>
+        <div class="monthly-price">NT$800<span style="font-size:1rem;font-family:var(--mono);color:var(--muted);">/月</span></div>
+        <div class="monthly-desc">主機費用代管、問題回報與修復、基本技術支援。</div>
+      </div>
+      <div class="monthly-item">
+        <div class="monthly-label">進階維護月費</div>
+        <div class="monthly-price">NT$1,500<span style="font-size:1rem;font-family:var(--mono);color:var(--muted);">/月</span></div>
+        <div class="monthly-desc">含小型功能更新、Notion 協助、每月一次視訊討論。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Contact ── -->
+<section class="contact" id="contact">
+  <div class="contact-inner">
+    <div>
+      <div class="eyebrow">Apply Now</div>
+      <h2 class="section-title">開始你的<br>電商旅程</h2>
+      <div class="divider"></div>
+      <p class="section-desc" style="margin-bottom:32px;">
+        填寫下方表單，我通常在 24 小時內回覆。初步討論完全免費，歡迎先聊聊你的品牌想法。
+      </p>
+      <div style="padding:28px 32px;border:1px solid var(--border);margin-top:32px;">
+        <div class="eyebrow" style="margin-bottom:16px;">常見問題</div>
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.88rem;color:var(--cream);margin-bottom:4px;">需要自己懂技術嗎？</div>
+          <div style="font-size:0.83rem;color:var(--muted);font-weight:300;">不需要。後台管理介面設計得很直覺，商品上架、接單、出貨都可以自己操作。</div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.88rem;color:var(--cream);margin-bottom:4px;">主機費用是多少？</div>
+          <div style="font-size:0.83rem;color:var(--muted);font-weight:300;">Cloudflare 免費方案足夠一般咖啡品牌使用，每月主機費接近零。月費主要是我的維護服務費。</div>
+        </div>
+        <div>
+          <div style="font-size:0.88rem;color:var(--cream);margin-bottom:4px;">之後可以改風格嗎？</div>
+          <div style="font-size:0.83rem;color:var(--muted);font-weight:300;">可以。色彩和文案調整隨時都能做，大幅度的視覺重構則需要另外估價。</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div id="contactForm">
+        <div class="form-group">
+          <label class="form-label">品牌名稱 *</label>
+          <input type="text" class="form-input" id="f-brand" placeholder="例：山丘咖啡"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">您的姓名 *</label>
+          <input type="text" class="form-input" id="f-name" placeholder="方便稱呼您的名字"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">聯絡 Email *</label>
+          <input type="email" class="form-input" id="f-email" placeholder="your@email.com"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Line ID 或電話（選填）</label>
+          <input type="text" class="form-input" id="f-line" placeholder="方便即時聯絡"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">感興趣的方案</label>
+          <select class="form-select" id="f-plan">
+            <option value="">請選擇</option>
+            <option value="basic">基本版 NT$8,000</option>
+            <option value="brand">品牌版 NT$15,000（最多人選擇）</option>
+            <option value="flagship">旗艦版 NT$25,000+</option>
+            <option value="unsure">還不確定，想先了解</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">品牌簡介或想法</label>
+          <textarea class="form-textarea" id="f-desc" placeholder="簡單介紹你的品牌，或目前想要的風格方向、商品種類..."></textarea>
+        </div>
+        <button class="form-submit" onclick="submitForm()">送出申請</button>
+        <p style="font-size:0.72rem;color:var(--muted);margin-top:12px;text-align:center;">通常在 24 小時內回覆 · 初步討論完全免費</p>
+      </div>
+      <div class="form-success" id="formSuccess">
+        <div class="form-success-icon">☕</div>
+        <div class="form-success-title">收到了！</div>
+        <div class="form-success-desc">感謝你的申請，我會在 24 小時內透過 Email 與你聯繫。<br>期待和你一起打造專屬的咖啡電商。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-brand">Coffee Brand <em>Engine</em></div>
+  <div class="footer-copy">© 2026 Coffee Brand Engine · 專為精品咖啡品牌打造</div>
+</footer>
+
+<script>
+function submitForm(){
+  const brand = document.getElementById('f-brand').value.trim();
+  const name  = document.getElementById('f-name').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+
+  if(!brand || !name || !email){
+    alert('請填寫品牌名稱、姓名和 Email');
+    return;
+  }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    alert('請輸入正確的 Email 格式');
+    return;
+  }
+
+  // 這裡可以之後串接 Formspree 或其他表單服務
+  // 目前先顯示成功畫面
+  document.getElementById('contactForm').style.display = 'none';
+  document.getElementById('formSuccess').style.display = 'block';
+}
+</script>
+</body>
+</html>
